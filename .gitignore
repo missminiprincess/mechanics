@@ -21,6 +21,8 @@ docs/pdf/*.pdf
 docs/sources/books/*.pdf
 results/archive/
 results/figures/
+results/html/
+results/runs/
 results/*_summary.json
 results/*_coordinates.json
 results/animations/*.gif
