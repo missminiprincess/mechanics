@@ -9,7 +9,7 @@ from mechanics.core.models import LagrangePointMap, OutputPaths
 def project_root() -> Path:
     """Return the repository root."""
 
-    return Path(__file__).resolve().parents[3]
+    return Path(__file__).resolve().parents[2]
 
 
 def resolve_output_paths(root: Path | None = None) -> OutputPaths:
