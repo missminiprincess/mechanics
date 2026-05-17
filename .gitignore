@@ -1,0 +1,27 @@
+__pycache__/
+*.pyc
+.DS_Store
+.venv/
+
+# TeX build artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+
+# Generated outputs
+docs/pdf/*.pdf
+docs/sources/books/*.pdf
+results/archive/
+results/figures/
+results/*_summary.json
+results/*_coordinates.json
+results/animations/*.gif
+results/animations/*.mp4
