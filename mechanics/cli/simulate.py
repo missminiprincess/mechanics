@@ -1,9 +1,6 @@
 """CLI command for one simulation run."""
 
-from __future__ import annotations
-
 from pathlib import Path
-from typing import Optional
 
 import typer
 
@@ -29,7 +26,7 @@ def simulate_command(
     sample_stride: int = typer.Option(
         6, "--sample-stride", help="Sampling stride for interactive outputs."
     ),
-    output_stem: Optional[str] = typer.Option(None, "--output-stem", help="Base output name."),
+    output_stem: str | None = typer.Option(None, "--output-stem", help="Base output name."),
 ) -> None:
     """Integrate one trajectory and save static outputs."""
 
@@ -64,7 +61,7 @@ def simulate_command(
     typer.echo(f"Saved interactive dashboard: {paths.html_dir / f'{stem}.html'}")
 
 
-def run_single_case(stem: str, config: SimulationConfig, root: Optional[Path] = None) -> None:
+def run_single_case(stem: str, config: SimulationConfig, root: Path | None = None) -> None:
     """Shared helper for showcase-style runs."""
 
     result = run_simulation(sun_earth_system(), config)

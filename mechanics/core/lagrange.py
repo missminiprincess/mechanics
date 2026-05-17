@@ -1,7 +1,5 @@
 """Lagrange point computation."""
 
-from __future__ import annotations
-
 import numpy as np
 from scipy.optimize import root_scalar  # type: ignore[import-untyped]
 

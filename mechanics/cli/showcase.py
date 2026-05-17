@@ -1,7 +1,5 @@
 """CLI command for a compact showcase run."""
 
-from __future__ import annotations
-
 import typer
 
 from mechanics.cli.simulate import run_single_case

@@ -1,7 +1,5 @@
 """Static matplotlib plots for report-ready outputs."""
 
-from __future__ import annotations
-
 from pathlib import Path
 from typing import Any
 
@@ -179,7 +177,7 @@ def _time_colored_line(ax: Any, x: np.ndarray, y: np.ndarray) -> None:
 
     points = np.column_stack([x, y]).reshape(-1, 1, 2)
     segments = np.concatenate([points[:-1], points[1:]], axis=1)
-    collection = LineCollection(segments, cmap="viridis", linewidth=2.2)
+    collection = LineCollection(segments.tolist(), cmap="viridis", linewidth=2.2)
     collection.set_array(np.linspace(0.0, 1.0, len(segments)))
     ax.add_collection(collection)
 

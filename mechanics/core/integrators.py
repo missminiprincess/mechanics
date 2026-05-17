@@ -1,7 +1,5 @@
 """Numerical integrators used in the project."""
 
-from __future__ import annotations
-
 import numpy as np
 from scipy.integrate import solve_ivp  # type: ignore[import-untyped]
 

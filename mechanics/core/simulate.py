@@ -1,7 +1,5 @@
 """High-level simulation pipeline."""
 
-from __future__ import annotations
-
 import numpy as np
 
 from mechanics.core.integrators import integrate_trajectory

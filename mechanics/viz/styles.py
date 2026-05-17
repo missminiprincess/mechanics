@@ -1,7 +1,5 @@
 """Shared style helpers for static plots."""
 
-from __future__ import annotations
-
 from typing import Any
 
 import matplotlib

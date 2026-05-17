@@ -1,7 +1,5 @@
 """Known CR3BP systems."""
 
-from __future__ import annotations
-
 from mechanics.core.models import SystemParameters
 
 SUN_MASS_KG = 1.9885e30

@@ -1,7 +1,5 @@
 """Typed data models for the CR3BP simulation pipeline."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -10,7 +8,7 @@ import numpy as np
 LagrangePointMap = dict[str, np.ndarray]
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class SystemParameters:
     """Normalized parameters of one CR3BP system."""
 
@@ -19,7 +17,7 @@ class SystemParameters:
     distance_m: float
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class SimulationConfig:
     """Configuration for one trajectory run near a Lagrange point."""
 
@@ -47,7 +45,7 @@ class SimulationConfig:
         return f"sun_earth_{self.point_name.lower()}_{self.mode_name}"
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class SimulationResult:
     """All computed state needed by visualization and export layers."""
 
@@ -79,7 +77,7 @@ class SimulationResult:
         return np.hypot(rel[:, 0], rel[:, 1])
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class OutputPaths:
     """Resolved filesystem targets for one simulation run."""
 

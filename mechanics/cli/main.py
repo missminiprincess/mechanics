@@ -1,7 +1,5 @@
 """Typer entrypoint for the mechanics package."""
 
-from __future__ import annotations
-
 import typer
 
 from mechanics.cli.showcase import showcase_command

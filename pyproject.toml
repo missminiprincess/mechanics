@@ -7,7 +7,7 @@ name = "mechanics"
 version = "0.1.0"
 description = "CR3BP simulations and visualizations for Sun-Earth Lagrange points"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.13"
 dependencies = [
   "matplotlib>=3.9",
   "numpy>=2.0",
@@ -19,30 +19,28 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "ipython>=8.18",
-  "mypy>=1.19",
+  "mypy>=2.0",
+  "pre-commit>=4.0",
   "ruff>=0.15",
 ]
 
 [project.scripts]
 mechanics = "mechanics.cli.main:main"
 
-[tool.setuptools]
-package-dir = {"" = "src"}
-
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["."]
+include = ["mechanics*"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py39"
+target-version = "py313"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
-ignore = ["UP045"]
 
 [tool.mypy]
-python_version = "3.9"
-files = ["src", "code/src"]
+python_version = "3.13"
+files = ["mechanics"]
 warn_unused_configs = true
 check_untyped_defs = true
 disallow_incomplete_defs = true

@@ -1,7 +1,5 @@
 """Summary builders for simulation outputs."""
 
-from __future__ import annotations
-
 from mechanics.core.models import SimulationResult
 
 

@@ -1,7 +1,5 @@
 """Dynamics of the circular restricted three-body problem."""
 
-from __future__ import annotations
-
 import numpy as np
 
 
