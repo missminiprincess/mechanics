@@ -22,8 +22,6 @@ mechanics/
 │     ├─ viz/
 │     ├─ io/
 │     └─ cli/
-├─ code/
-│  └─ src/
 ├─ results/
 │  ├─ figures/
 │  ├─ html/
@@ -43,7 +41,6 @@ mechanics/
 - `results/figures/` — статические `png/svg`
 - `results/html/` — интерактивные `html`
 - `results/runs/` — summary по каждому запуску
-- `code/src/` — compatibility wrappers для старых путей запуска
 
 ## Быстрый запуск
 
@@ -66,8 +63,3 @@ PYTHONPATH=src python3 -m mechanics.cli.main showcase
 - `results/figures/*_3d.png`
 - `results/figures/*.svg`
 - `results/html/*.html`
-
-## Совместимость
-
-Старые скрипты `code/src/run_simulation.py` и `code/src/make_showcase.py` оставлены как тонкие wrappers.
-Старый `pygame` viewer выведен из основного пути; вместо него используется `plotly` dashboard.
