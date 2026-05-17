@@ -7,6 +7,7 @@ from mechanics.core.lagrange import lagrange_points
 from mechanics.core.models import SimulationConfig
 from mechanics.core.systems import sun_earth_system
 from mechanics.io.export import resolve_output_paths, save_lagrange_points
+from mechanics.viz.interactive import save_showcase_comparison
 from mechanics.viz.static import plot_system_layout
 
 
@@ -20,15 +21,19 @@ def showcase_command() -> None:
     save_lagrange_points(points, paths.root / "sun_earth_lagrange_points_coordinates.json")
     plot_system_layout(points, system, paths.figures_dir / "sun_earth_lagrange_points_map.png")
 
-    run_single_case(
+    l1_result = run_single_case(
         "sun_earth_l1_unstable",
         SimulationConfig(point_name="L1", dx=1e-4, t_max=20.0, dt=0.002, sample_stride=10),
     )
-    run_single_case(
+    l4_result = run_single_case(
         "sun_earth_l4_stable",
         SimulationConfig(
             point_name="L4", dx=1e-4, vx=0.001, vy=0.001, t_max=12.0, dt=0.002, sample_stride=10
         ),
+    )
+    save_showcase_comparison(
+        [l1_result, l4_result],
+        paths.html_dir / "sun_earth_showcase_comparison.html",
     )
 
     typer.echo(f"Saved layout map: {paths.figures_dir / 'sun_earth_lagrange_points_map.png'}")

@@ -4,4 +4,4 @@
 
 - `figures/` — статические `png/svg`
 - `html/` — интерактивные `plotly` dashboards
-- `runs/` — JSON summary по каждому запуску
+- `runs/` — JSON summary и CSV-траектория по каждому запуску

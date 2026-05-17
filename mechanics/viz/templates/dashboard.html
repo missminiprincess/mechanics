@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{title}</title>
+  <script src="https://cdn.plot.ly/plotly-3.5.0.min.js"
+          integrity="sha256-fHbNLP+GlIXN+efbQec78UkemUz3NJp7UmfGxC1tNxs="
+          crossorigin="anonymous"></script>
+  <style>
+    :root {{
+      color-scheme: dark;
+      --bg: #05070d;
+      --panel: #080d17;
+      --panel-border: #1f2937;
+      --text: #f6f8ff;
+      --muted: #9ca3af;
+      --accent: #38a3ff;
+    }}
+    * {{ box-sizing: border-box; }}
+    html, body {{ margin: 0; min-height: 100%; background: var(--bg); color: var(--text); }}
+    body {{ font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }}
+    main {{ width: min(1560px, 100%); margin: 0 auto; padding: 18px; }}
+    header {{ padding: 4px 2px 16px; }}
+    h1 {{ margin: 0; font-size: clamp(20px, 2vw, 30px); font-weight: 760; line-height: 1.12; }}
+    .subtitle {{ margin: 6px 0 0; color: var(--muted); font-size: 13px; }}
+    .tabs {{ display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }}
+    .tab-button {{
+      border: 1px solid var(--panel-border);
+      background: var(--panel);
+      color: var(--text);
+      cursor: pointer;
+      font: inherit;
+      padding: 9px 13px;
+    }}
+    .tab-button[aria-selected="true"] {{ border-color: var(--accent); color: #ffffff; }}
+    .tab-panel {{ display: none; }}
+    .tab-panel.is-active {{ display: block; }}
+    .dashboard {{
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(360px, 0.9fr);
+      grid-template-areas:
+        "local metrics"
+        "local distance";
+      gap: 16px;
+      align-items: stretch;
+    }}
+    .split-grid {{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }}
+    .panel, .metrics {{
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      min-width: 0;
+      overflow: hidden;
+    }}
+    .plot-local {{ grid-area: local; height: 680px; }}
+    .plot-distance {{ grid-area: distance; height: 360px; }}
+    .plot-three, .plot-context, .plot-comparison {{ height: 650px; }}
+    .metrics {{
+      grid-area: metrics;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--panel-border);
+    }}
+    .metric {{ background: var(--panel); padding: 14px 16px; min-width: 0; }}
+    .metric span {{
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }}
+    .metric strong {{
+      display: block;
+      font-size: 17px;
+      line-height: 1.15;
+      overflow-wrap: anywhere;
+    }}
+    .panel > div {{ width: 100%; height: 100%; }}
+    @media (max-width: 980px) {{
+      main {{ padding: 12px; }}
+      .dashboard {{
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+          "metrics"
+          "local"
+          "distance";
+      }}
+      .split-grid {{ grid-template-columns: minmax(0, 1fr); }}
+      .metrics {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
+      .plot-local {{ height: 540px; }}
+      .plot-distance {{ height: 360px; }}
+      .plot-three, .plot-context, .plot-comparison {{ height: 500px; }}
+    }}
+    @media (max-width: 560px) {{
+      main {{ padding: 8px; }}
+      h1 {{ font-size: 20px; }}
+      .subtitle {{ font-size: 12px; }}
+      .dashboard, .split-grid {{ gap: 10px; }}
+      .metrics {{ grid-template-columns: minmax(0, 1fr); }}
+      .metric {{ padding: 11px 12px; }}
+      .metric strong {{ font-size: 15px; }}
+      .plot-local {{ height: 430px; }}
+      .plot-distance {{ height: 320px; }}
+      .plot-three, .plot-context, .plot-comparison {{ height: 410px; }}
+    }}
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>{title}</h1>
+      <p class="subtitle">{subtitle}</p>
+    </header>
+    <nav class="tabs" aria-label="Разделы дашборда">
+      {tab_buttons}
+    </nav>
+    {tab_panels}
+  </main>
+  <script>
+    const buttons = document.querySelectorAll(".tab-button");
+    const panels = document.querySelectorAll(".tab-panel");
+    buttons.forEach((button) => {{
+      button.addEventListener("click", () => {{
+        buttons.forEach((item) => item.setAttribute("aria-selected", "false"));
+        panels.forEach((panel) => panel.classList.remove("is-active"));
+        button.setAttribute("aria-selected", "true");
+        document.getElementById(button.dataset.tab).classList.add("is-active");
+        window.dispatchEvent(new Event("resize"));
+      }});
+    }});
+  </script>
+</body>
+</html>

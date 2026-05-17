@@ -66,7 +66,12 @@ python -m mechanics.cli.main showcase
 Что создаётся:
 
 - `results/runs/*.json`
+- `results/runs/*_trajectory.csv`
 - `results/figures/*_2d.png`
 - `results/figures/*_3d.png`
 - `results/figures/*.svg`
 - `results/html/*.html`
+
+Для `showcase` дополнительно создаётся интерактивное сравнение:
+
+- `results/html/sun_earth_showcase_comparison.html`

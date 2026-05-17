@@ -4,10 +4,15 @@ from pathlib import Path
 
 import typer
 
-from mechanics.core.models import SimulationConfig
+from mechanics.core.models import SimulationConfig, SimulationResult
 from mechanics.core.simulate import run_simulation
 from mechanics.core.systems import sun_earth_system
-from mechanics.io.export import resolve_output_paths, save_json, save_lagrange_points
+from mechanics.io.export import (
+    resolve_output_paths,
+    save_json,
+    save_lagrange_points,
+    save_trajectory_csv,
+)
 from mechanics.io.summary import simulation_summary
 from mechanics.viz.interactive import save_dashboard
 from mechanics.viz.static import plot_system_layout, plot_trajectory, plot_trajectory_3d
@@ -48,6 +53,7 @@ def simulate_command(
 
     save_lagrange_points(result.points, paths.root / "sun_earth_lagrange_points_coordinates.json")
     save_json(simulation_summary(result), paths.runs_dir / f"{stem}.json")
+    save_trajectory_csv(result, paths.runs_dir / f"{stem}_trajectory.csv")
     plot_system_layout(
         result.points, result.system, paths.figures_dir / "sun_earth_lagrange_points_map.png"
     )
@@ -56,17 +62,22 @@ def simulate_command(
     save_dashboard(result, paths.html_dir / f"{stem}.html")
 
     typer.echo(f"Saved summary: {paths.runs_dir / f'{stem}.json'}")
+    typer.echo(f"Saved trajectory CSV: {paths.runs_dir / f'{stem}_trajectory.csv'}")
     typer.echo(f"Saved 2D figure: {paths.figures_dir / f'{stem}_2d.png'}")
     typer.echo(f"Saved 3D figure: {paths.figures_dir / f'{stem}_3d.png'}")
     typer.echo(f"Saved interactive dashboard: {paths.html_dir / f'{stem}.html'}")
 
 
-def run_single_case(stem: str, config: SimulationConfig, root: Path | None = None) -> None:
+def run_single_case(
+    stem: str, config: SimulationConfig, root: Path | None = None
+) -> SimulationResult:
     """Shared helper for showcase-style runs."""
 
     result = run_simulation(sun_earth_system(), config)
     paths = resolve_output_paths(root)
     save_json(simulation_summary(result), paths.runs_dir / f"{stem}.json")
+    save_trajectory_csv(result, paths.runs_dir / f"{stem}_trajectory.csv")
     plot_trajectory(result, paths.figures_dir / f"{stem}_2d.png")
     plot_trajectory_3d(result, paths.figures_dir / f"{stem}_3d.png")
     save_dashboard(result, paths.html_dir / f"{stem}.html")
+    return result

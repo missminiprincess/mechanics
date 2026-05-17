@@ -1,9 +1,10 @@
 """Filesystem export helpers."""
 
+import csv
 import json
 from pathlib import Path
 
-from mechanics.core.models import LagrangePointMap, OutputPaths
+from mechanics.core.models import LagrangePointMap, OutputPaths, SimulationResult
 
 
 def project_root() -> Path:
@@ -37,3 +38,42 @@ def save_lagrange_points(points: LagrangePointMap, path: Path) -> None:
 
     payload = {name: coords.tolist() for name, coords in points.items()}
     save_json(payload, path)
+
+
+def save_trajectory_csv(result: SimulationResult, path: Path) -> None:
+    """Store the full simulated trajectory as analysis-ready CSV."""
+
+    header = [
+        "t",
+        "x",
+        "y",
+        "z",
+        "vx",
+        "vy",
+        "vz",
+        "dx",
+        "dy",
+        "dz",
+        "r_xy",
+    ]
+    with path.open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.writer(stream)
+        writer.writerow(header)
+        for time, state, rel, distance in zip(
+            result.times, result.states, result.rel_states, result.rel_distance_xy, strict=True
+        ):
+            writer.writerow(
+                [
+                    time,
+                    state[0],
+                    state[1],
+                    state[2],
+                    state[3],
+                    state[4],
+                    state[5],
+                    rel[0],
+                    rel[1],
+                    rel[2],
+                    distance,
+                ]
+            )

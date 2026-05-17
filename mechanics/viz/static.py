@@ -8,9 +8,25 @@ import numpy as np
 from matplotlib.collections import LineCollection
 from matplotlib.lines import Line2D
 from matplotlib.patches import Circle
+from mpl_toolkits.axes_grid1.inset_locator import (  # type: ignore[import-untyped]
+    inset_axes,
+    mark_inset,
+)
 
 from mechanics.core.models import LagrangePointMap, SimulationResult, SystemParameters
 from mechanics.viz.styles import apply_dark_2d_style, apply_dark_3d_style
+
+
+def _run_parameters_text(result: SimulationResult) -> str:
+    """Return a compact text block with simulation parameters."""
+
+    config = result.config
+    return (
+        f"Параметры: point={config.point_name}, "
+        f"dx={config.dx:g}, dy={config.dy:g}, dz={config.dz:g}, "
+        f"vx={config.vx:g}, vy={config.vy:g}, vz={config.vz:g}, "
+        f"t_max={config.t_max:g}, dt={config.dt:g}, samples={len(result.times)}"
+    )
 
 
 def plot_system_layout(
@@ -244,6 +260,22 @@ def plot_trajectory(result: SimulationResult, output_path: Path) -> None:
         zorder=5,
     )
 
+    ax_inset = inset_axes(ax_global, width="38%", height="38%", loc="lower right", borderpad=1.0)
+    apply_dark_2d_style(ax_inset)
+    ax_inset.set_title(f"Zoom около {config.point_name}", fontsize=9)
+    ax_inset.set_aspect("equal", adjustable="box")
+    ax_inset.axhline(target[1], color="#8893a8", linewidth=0.8)
+    ax_inset.axvline(target[0], color="#8893a8", linewidth=0.8)
+    ax_inset.plot(states[:, 0], states[:, 1], color="#38a3ff", linewidth=1.6)
+    ax_inset.scatter(target[0], target[1], s=46, color="#ff5b5b", edgecolor="black", linewidth=0.5)
+    ax_inset.scatter(states[0, 0], states[0, 1], s=34, color="#23d160", edgecolor="black")
+    ax_inset.scatter(states[-1, 0], states[-1, 1], s=34, color="#ff7b00", edgecolor="black")
+    inset_radius = max(np.ptp(states[:, 0]), np.ptp(states[:, 1]), 0.02) * 0.65
+    ax_inset.set_xlim(target[0] - inset_radius, target[0] + inset_radius)
+    ax_inset.set_ylim(target[1] - inset_radius, target[1] + inset_radius)
+    ax_inset.tick_params(labelsize=7)
+    mark_inset(ax_global, ax_inset, loc1=1, loc2=3, fc="none", ec="#4b5568", linewidth=0.8)
+
     x_center = 0.5 * (states[:, 0].min() + states[:, 0].max())
     y_center = 0.5 * (states[:, 1].min() + states[:, 1].max())
     ax_global.set_xlim(
@@ -296,7 +328,14 @@ def plot_trajectory(result: SimulationResult, output_path: Path) -> None:
         fontsize=18,
         y=0.98,
     )
-    fig.subplots_adjust(left=0.06, right=0.98, bottom=0.1, top=0.88, wspace=0.2)
+    fig.text(
+        0.06,
+        0.035,
+        _run_parameters_text(result),
+        color="#b8c4d8",
+        fontsize=10,
+    )
+    fig.subplots_adjust(left=0.06, right=0.98, bottom=0.12, top=0.88, wspace=0.2)
     fig.savefig(output_path)
     fig.savefig(output_path.with_suffix(".svg"))
     plt.close(fig)
@@ -366,7 +405,9 @@ def plot_trajectory_3d(result: SimulationResult, output_path: Path) -> None:
     ax.set_title(
         (
             f"3D-вид траектории около {result.point_name}\n"
-            f"{behavior}; max r = {rel_distance.max():.4f}"
+            f"{behavior}; max r = {rel_distance.max():.4f}\n"
+            f"t_max={result.config.t_max:g}, dt={result.config.dt:g}, "
+            f"vx={result.config.vx:g}, vy={result.config.vy:g}, vz={result.config.vz:g}"
         ),
         pad=16,
     )
