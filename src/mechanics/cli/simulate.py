@@ -12,6 +12,7 @@ from mechanics.core.simulate import run_simulation
 from mechanics.core.systems import sun_earth_system
 from mechanics.io.export import resolve_output_paths, save_json, save_lagrange_points
 from mechanics.io.summary import simulation_summary
+from mechanics.viz.interactive import save_dashboard
 from mechanics.viz.static import plot_system_layout, plot_trajectory, plot_trajectory_3d
 
 
@@ -55,10 +56,12 @@ def simulate_command(
     )
     plot_trajectory(result, paths.figures_dir / f"{stem}_2d.png")
     plot_trajectory_3d(result, paths.figures_dir / f"{stem}_3d.png")
+    save_dashboard(result, paths.html_dir / f"{stem}.html")
 
     typer.echo(f"Saved summary: {paths.runs_dir / f'{stem}.json'}")
     typer.echo(f"Saved 2D figure: {paths.figures_dir / f'{stem}_2d.png'}")
     typer.echo(f"Saved 3D figure: {paths.figures_dir / f'{stem}_3d.png'}")
+    typer.echo(f"Saved interactive dashboard: {paths.html_dir / f'{stem}.html'}")
 
 
 def run_single_case(stem: str, config: SimulationConfig, root: Optional[Path] = None) -> None:
@@ -69,3 +72,4 @@ def run_single_case(stem: str, config: SimulationConfig, root: Optional[Path] = 
     save_json(simulation_summary(result), paths.runs_dir / f"{stem}.json")
     plot_trajectory(result, paths.figures_dir / f"{stem}_2d.png")
     plot_trajectory_3d(result, paths.figures_dir / f"{stem}_3d.png")
+    save_dashboard(result, paths.html_dir / f"{stem}.html")
