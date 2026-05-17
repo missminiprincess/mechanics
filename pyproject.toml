@@ -38,6 +38,7 @@ target-version = "py39"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
+ignore = ["UP045"]
 
 [tool.mypy]
 python_version = "3.9"

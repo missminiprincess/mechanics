@@ -1,24 +1,19 @@
-"""Typer entrypoint for the mechanics package.
-
-This module is introduced early in the refactor so the CLI surface can remain
-stable while the implementation is moved into smaller modules.
-"""
+"""Typer entrypoint for the mechanics package."""
 
 from __future__ import annotations
 
 import typer
+
+from mechanics.cli.showcase import showcase_command
+from mechanics.cli.simulate import simulate_command
 
 app = typer.Typer(
     add_completion=False,
     help="Run CR3BP simulations and generate report-ready visualizations.",
 )
 
-
-@app.command("info")
-def info() -> None:
-    """Print a short status line for the package bootstrap stage."""
-
-    typer.echo("mechanics CLI is bootstrapped; simulation commands arrive in the next stage.")
+app.command("simulate")(simulate_command)
+app.command("showcase")(showcase_command)
 
 
 def main() -> None:
