@@ -1,0 +1,415 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[a4paper,top=20mm,bottom=24mm,left=18mm,right=18mm]{geometry}
+\usepackage{iftex}
+\ifXeTeX
+  \usepackage{fontspec}
+  \usepackage{polyglossia}
+  \setdefaultlanguage{russian}
+  \setotherlanguage{english}
+  \setmainfont{Times New Roman}
+  \setmonofont{Menlo}
+  \newfontfamily\cyrillicfont{Times New Roman}
+  \newfontfamily\cyrillicfonttt{Menlo}
+\else
+  \usepackage[T1,T2A]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage[english,russian]{babel}
+\fi
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{titlesec}
+
+\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=black}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\linespread{1.12}
+\sloppy
+
+\definecolor{codebg}{RGB}{247,248,250}
+\definecolor{codeframe}{RGB}{214,219,226}
+\definecolor{codekw}{RGB}{20,78,140}
+
+\lstdefinestyle{cmd}{
+  basicstyle=\small\ttfamily,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  rulecolor=\color{codeframe},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  keywordstyle=\color{codekw},
+}
+\lstset{style=cmd}
+
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection.}{0.6em}{}
+
+\title{\textbf{Команды проекта для расчётов и визуализаций}}
+\author{Проект: точки Лагранжа в ограниченной задаче трёх тел}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Подготовка}
+
+Все команды ниже выполняются из корня склонированного репозитория. То есть
+сначала нужно перейти в папку проекта, а затем активировать виртуальное
+окружение:
+
+\begin{lstlisting}
+source .venv/bin/activate
+\end{lstlisting}
+
+Команды можно запускать двумя способами. Через модуль Python:
+
+\begin{lstlisting}
+python -m mechanics.cli.main ...
+\end{lstlisting}
+
+Или через установленную консольную команду:
+
+\begin{lstlisting}
+mechanics ...
+\end{lstlisting}
+
+\section{Главная команда для всех готовых материалов}
+
+\begin{lstlisting}
+python -m mechanics.cli.main showcase --system sun-earth
+\end{lstlisting}
+
+Эквивалентная короткая форма:
+
+\begin{lstlisting}
+mechanics showcase --system sun-earth
+\end{lstlisting}
+
+Эта команда пересобирает основной набор результатов проекта. Она:
+
+\begin{itemize}[leftmargin=1.2cm]
+  \item задаёт выбранную систему двух массивных тел;
+  \item находит все точки Лагранжа $L_1,\ldots,L_5$;
+  \item строит карту точек Лагранжа;
+  \item считает базовую неустойчивую траекторию около $L_1$;
+  \item считает базовую устойчивую траекторию около $L_4$;
+  \item делает сравнение движения около $L_1$ и $L_4$;
+  \item делает сравнение при одинаковом начальном возмущении;
+  \item строит серию расчётов по амплитудам $dx$;
+  \item строит серию расчётов по шагу интегрирования $dt$;
+  \item собирает общий интерактивный HTML-файл.
+\end{itemize}
+
+Основные создаваемые файлы:
+
+\begin{lstlisting}
+results/sun_earth_lagrange_points_coordinates.json
+results/runs/sun_earth_l1_unstable.json
+results/runs/sun_earth_l1_unstable_trajectory.csv
+results/runs/sun_earth_l4_stable.json
+results/runs/sun_earth_l4_stable_trajectory.csv
+results/figures/sun_earth_lagrange_points_map.png
+results/figures/sun_earth_lagrange_points_map.svg
+results/figures/sun_earth_l1_unstable_2d.png
+results/figures/sun_earth_l1_unstable_2d.svg
+results/figures/sun_earth_l1_unstable_3d.png
+results/figures/sun_earth_l1_unstable_3d.svg
+results/figures/sun_earth_l4_stable_2d.png
+results/figures/sun_earth_l4_stable_2d.svg
+results/figures/sun_earth_l4_stable_3d.png
+results/figures/sun_earth_l4_stable_3d.svg
+results/html/sun_earth_showcase.html
+\end{lstlisting}
+
+\section{Один расчёт около $L_1$}
+
+\begin{lstlisting}
+python -m mechanics.cli.main simulate --system sun-earth --point L1 --dx 1e-4 --t-max 20 --dt 0.002 --output-stem sun_earth_l1_unstable
+\end{lstlisting}
+
+Смысл параметров:
+
+\begin{itemize}[leftmargin=1.2cm]
+  \item \texttt{simulate} -- запустить один расчёт;
+  \item \texttt{--system sun-earth} -- выбрать физическую систему Солнце--Земля;
+  \item \texttt{--point L1} -- считать движение около точки Лагранжа $L_1$;
+  \item \texttt{--dx 1e-4} -- начальное смещение по оси $x$;
+  \item \texttt{--t-max 20} -- считать до времени 20 в нормированных единицах;
+  \item \texttt{--dt 0.002} -- шаг вывода данных;
+  \item \texttt{--output-stem sun\_earth\_l1\_unstable} -- базовое имя файлов результата.
+\end{itemize}
+
+Создаёт:
+
+\begin{lstlisting}
+results/runs/sun_earth_l1_unstable.json
+results/runs/sun_earth_l1_unstable_trajectory.csv
+results/figures/sun_earth_l1_unstable_2d.png
+results/figures/sun_earth_l1_unstable_3d.png
+results/html/sun_earth_l1_unstable.html
+\end{lstlisting}
+
+\section{Один расчёт около $L_4$}
+
+\begin{lstlisting}
+python -m mechanics.cli.main simulate --system sun-earth --point L4 --dx 1e-4 --vx 0.001 --vy 0.001 --t-max 12 --dt 0.002 --output-stem sun_earth_l4_stable
+\end{lstlisting}
+
+Отличия от расчёта около $L_1$:
+
+\begin{itemize}[leftmargin=1.2cm]
+  \item \texttt{--point L4} -- движение около треугольной точки $L_4$;
+  \item \texttt{--vx 0.001} -- начальная скорость по $x$;
+  \item \texttt{--vy 0.001} -- начальная скорость по $y$.
+\end{itemize}
+
+Создаёт:
+
+\begin{lstlisting}
+results/runs/sun_earth_l4_stable.json
+results/runs/sun_earth_l4_stable_trajectory.csv
+results/figures/sun_earth_l4_stable_2d.png
+results/figures/sun_earth_l4_stable_3d.png
+results/html/sun_earth_l4_stable.html
+\end{lstlisting}
+
+\section{Расчёт около любой точки Лагранжа}
+
+\begin{lstlisting}
+python -m mechanics.cli.main simulate --system sun-earth --point L2 --dx 1e-4 --t-max 10 --dt 0.002 --output-stem sun_earth_l2_example
+\end{lstlisting}
+
+В параметре \texttt{--point} можно указать:
+
+\begin{lstlisting}
+--point L1
+--point L2
+--point L3
+--point L4
+--point L5
+\end{lstlisting}
+
+В параметре \texttt{--system} можно выбрать систему:
+
+\begin{lstlisting}
+--system sun-earth    система Солнце-Земля
+--system earth-moon   система Земля-Луна
+--system sun-jupiter  система Солнце-Юпитер
+\end{lstlisting}
+
+\section{Расчёт с другим начальным смещением}
+
+\begin{lstlisting}
+python -m mechanics.cli.main simulate --system sun-earth --point L1 --dx 1e-5 --t-max 12 --dt 0.002 --output-stem l1_dx_1e_minus_5
+\end{lstlisting}
+
+Параметры начального смещения:
+
+\begin{itemize}[leftmargin=1.2cm]
+  \item \texttt{--dx} -- смещение по $x$;
+  \item \texttt{--dy} -- смещение по $y$;
+  \item \texttt{--dz} -- смещение по $z$.
+\end{itemize}
+
+Пример трёхмерного возмущения:
+
+\begin{lstlisting}
+python -m mechanics.cli.main simulate --system sun-earth --point L4 --dx 1e-4 --dy 1e-4 --dz 1e-4 --t-max 12 --dt 0.002 --output-stem l4_3d_offset
+\end{lstlisting}
+
+\section{Расчёт с начальной скоростью}
+
+\begin{lstlisting}
+python -m mechanics.cli.main simulate --system sun-earth --point L4 --dx 1e-4 --vx 0.001 --vy 0.001 --vz 0.0 --t-max 12 --dt 0.002 --output-stem l4_with_velocity
+\end{lstlisting}
+
+Параметры начальной скорости:
+
+\begin{itemize}[leftmargin=1.2cm]
+  \item \texttt{--vx} -- начальная скорость по $x$;
+  \item \texttt{--vy} -- начальная скорость по $y$;
+  \item \texttt{--vz} -- начальная скорость по $z$.
+\end{itemize}
+
+\section{Проверка влияния шага $dt$}
+
+Более грубый шаг:
+
+\begin{lstlisting}
+python -m mechanics.cli.main simulate --system sun-earth --point L1 --dx 1e-4 --t-max 12 --dt 0.004 --output-stem l1_dt_0004
+\end{lstlisting}
+
+Более точный шаг:
+
+\begin{lstlisting}
+python -m mechanics.cli.main simulate --system sun-earth --point L1 --dx 1e-4 --t-max 12 --dt 0.001 --output-stem l1_dt_0001
+\end{lstlisting}
+
+Смысл проверки:
+
+\begin{itemize}[leftmargin=1.2cm]
+  \item большой \texttt{dt} даёт меньше точек, считается быстрее, но грубее;
+  \item маленький \texttt{dt} даёт больше точек, считается медленнее, но точнее;
+  \item в проекте это нужно, чтобы показать: уход от $L_1$ не является ошибкой численного шага.
+\end{itemize}
+
+\section{Параметр \texttt{sample-stride} для HTML}
+
+\begin{lstlisting}
+python -m mechanics.cli.main simulate --system sun-earth --point L1 --dx 1e-4 --t-max 20 --dt 0.002 --sample-stride 10 --output-stem l1_sampled
+\end{lstlisting}
+
+Параметр \texttt{--sample-stride 10} означает, что в интерактивные графики
+попадёт каждая десятая точка траектории. Меньшее значение делает HTML подробнее,
+но тяжелее. Большее значение делает HTML легче, но траектория становится менее
+детальной.
+
+\section{Как создать и открыть анимацию}
+
+Отдельной команды только для анимации в проекте нет. Анимация создаётся как
+часть интерактивного HTML-файла.
+
+Пример для траектории около $L_1$:
+
+\begin{lstlisting}
+mechanics simulate --system sun-earth --point L1 --dx 1e-4 --t-max 20 --dt 0.002 --output-stem l1_animation
+\end{lstlisting}
+
+После выполнения команды появится файл:
+
+\begin{lstlisting}
+results/html/l1_animation.html
+\end{lstlisting}
+
+Открыть его в браузере на macOS можно так:
+
+\begin{lstlisting}
+open results/html/l1_animation.html
+\end{lstlisting}
+
+Пример для траектории около $L_4$:
+
+\begin{lstlisting}
+mechanics simulate --system sun-earth --point L4 --dx 1e-4 --vx 0.001 --vy 0.001 --t-max 12 --dt 0.002 --output-stem l4_animation
+\end{lstlisting}
+
+Открытие результата:
+
+\begin{lstlisting}
+open results/html/l4_animation.html
+\end{lstlisting}
+
+Для общего демонстрационного HTML:
+
+\begin{lstlisting}
+mechanics showcase --system sun-earth
+open results/html/sun_earth_showcase.html
+\end{lstlisting}
+
+Если открывать через Visual Studio Code, можно найти файл в дереве проекта,
+нажать по нему правой кнопкой и выбрать открытие в браузере. Второй вариант:
+выбрать \texttt{Reveal in Finder}, а затем открыть файл двойным кликом.
+
+\section{Сборка основного PDF-отчёта}
+
+\begin{lstlisting}
+tectonic docs/tex/main.tex --outdir docs/pdf
+\end{lstlisting}
+
+Команда создаёт или обновляет файл:
+
+\begin{lstlisting}
+docs/pdf/main.pdf
+\end{lstlisting}
+
+\section{Главные параметры команды \texttt{simulate}}
+
+\begin{lstlisting}
+--system         система: sun-earth, earth-moon, sun-jupiter
+--point          точка Лагранжа: L1, L2, L3, L4, L5
+--dx             начальное смещение по x
+--dy             начальное смещение по y
+--dz             начальное смещение по z
+--vx             начальная скорость по x
+--vy             начальная скорость по y
+--vz             начальная скорость по z
+--t-max          конечное время расчёта в нормированных единицах
+--dt             шаг вывода траектории
+--sample-stride  прореживание точек для интерактивного HTML
+--output-stem    имя выходных файлов
+\end{lstlisting}
+
+\section*{Главная практическая команда}
+
+Самая полезная команда для проекта:
+
+\begin{lstlisting}
+python -m mechanics.cli.main showcase --system sun-earth
+\end{lstlisting}
+
+Она пересобирает основные картинки, таблицы расчётов и общий интерактивный
+HTML-файл.
+
+\section*{Универсальные команды всех типов}
+
+Подготовка окружения:
+
+\begin{lstlisting}
+source .venv/bin/activate
+\end{lstlisting}
+
+Пересобрать все основные результаты проекта:
+
+\begin{lstlisting}
+mechanics showcase --system sun-earth
+\end{lstlisting}
+
+Запустить один расчёт:
+
+\begin{lstlisting}
+mechanics simulate --system sun-earth --point L1 --dx 1e-4 --t-max 20 --dt 0.002 --output-stem my_run
+\end{lstlisting}
+
+Открыть HTML с анимацией одного расчёта:
+
+\begin{lstlisting}
+open results/html/my_run.html
+\end{lstlisting}
+
+Создать и открыть анимацию для $L_1$:
+
+\begin{lstlisting}
+mechanics simulate --system sun-earth --point L1 --dx 1e-4 --t-max 20 --dt 0.002 --output-stem l1_animation
+open results/html/l1_animation.html
+\end{lstlisting}
+
+Создать и открыть анимацию для $L_4$:
+
+\begin{lstlisting}
+mechanics simulate --system sun-earth --point L4 --dx 1e-4 --vx 0.001 --vy 0.001 --t-max 12 --dt 0.002 --output-stem l4_animation
+open results/html/l4_animation.html
+\end{lstlisting}
+
+Открыть общий интерактивный HTML:
+
+\begin{lstlisting}
+open results/html/sun_earth_showcase.html
+\end{lstlisting}
+
+Пересобрать основной PDF-отчёт:
+
+\begin{lstlisting}
+tectonic docs/tex/main.tex --outdir docs/pdf
+\end{lstlisting}
+
+Пересобрать этот PDF со списком команд:
+
+\begin{lstlisting}
+tectonic docs/tex/commands.tex --outdir docs/pdf
+\end{lstlisting}
+
+\end{document}

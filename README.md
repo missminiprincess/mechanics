@@ -32,7 +32,7 @@ mechanics/
 - `mechanics/core/` — математическая модель, точки Лагранжа, динамика и интегрирование
 - `mechanics/viz/` — статическая `matplotlib`-графика и интерактивные `plotly` dashboards
 - `mechanics/io/` — экспорт JSON и организация выходных файлов
-- `mechanics/cli/` — команды `simulate` и `showcase`
+- `mechanics/cli/` — команды `simulate` и `showcase`, включая выбор системы через `--system`
 - `docs/tex/` — исходники отчёта
 - `results/figures/` — статические `png/svg`
 - `results/html/` — интерактивные `html`
@@ -54,14 +54,20 @@ pre-commit install
 Один запуск:
 
 ```bash
-python -m mechanics.cli.main simulate --point L1 --dx 1e-4 --t-max 6 --dt 0.002
+python -m mechanics.cli.main simulate --system sun-earth --point L1 --dx 1e-4 --t-max 6 --dt 0.002
 ```
 
 Набор базовых демонстраций:
 
 ```bash
-python -m mechanics.cli.main showcase
+python -m mechanics.cli.main showcase --system sun-earth
 ```
+
+Поддерживаемые системы:
+
+- `sun-earth` — Солнце-Земля
+- `earth-moon` — Земля-Луна
+- `sun-jupiter` — Солнце-Юпитер
 
 Что создаётся:
 
@@ -72,6 +78,11 @@ python -m mechanics.cli.main showcase
 - `results/figures/*.svg`
 - `results/html/*.html`
 
-Для `showcase` дополнительно создаётся интерактивное сравнение:
+Для `showcase` создаётся единый интерактивный dashboard:
 
-- `results/html/sun_earth_showcase_comparison.html`
+- `results/html/sun_earth_showcase.html`
+
+В dashboard входят вкладки для базовых запусков `L1` и `L4`, сравнение устойчивости,
+одинаковое начальное возмущение, серия амплитуд `dx` и сравнение шага интегрирования `dt`.
+JSON summary и CSV-траектории дополнительно содержат физические масштабы в километрах/сутках,
+порог ухода, время ухода, рост отклонения и контроль интеграла Якоби.

@@ -58,7 +58,7 @@
     }}
     .plot-local {{ grid-area: local; height: 680px; }}
     .plot-distance {{ grid-area: distance; height: 360px; }}
-    .plot-three, .plot-context, .plot-comparison {{ height: 650px; }}
+    .plot-three, .plot-context, .plot-comparison, .plot-jacobi {{ height: 650px; }}
     .metrics {{
       grid-area: metrics;
       display: grid;
@@ -95,7 +95,7 @@
       .metrics {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
       .plot-local {{ height: 540px; }}
       .plot-distance {{ height: 360px; }}
-      .plot-three, .plot-context, .plot-comparison {{ height: 500px; }}
+      .plot-three, .plot-context, .plot-comparison, .plot-jacobi {{ height: 500px; }}
     }}
     @media (max-width: 560px) {{
       main {{ padding: 8px; }}
@@ -107,7 +107,7 @@
       .metric strong {{ font-size: 15px; }}
       .plot-local {{ height: 430px; }}
       .plot-distance {{ height: 320px; }}
-      .plot-three, .plot-context, .plot-comparison {{ height: 410px; }}
+      .plot-three, .plot-context, .plot-comparison, .plot-jacobi {{ height: 410px; }}
     }}
   </style>
 </head>

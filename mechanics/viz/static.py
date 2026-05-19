@@ -25,18 +25,22 @@ def _run_parameters_text(result: SimulationResult) -> str:
         f"Параметры: point={config.point_name}, "
         f"dx={config.dx:g}, dy={config.dy:g}, dz={config.dz:g}, "
         f"vx={config.vx:g}, vy={config.vy:g}, vz={config.vz:g}, "
-        f"t_max={config.t_max:g}, dt={config.dt:g}, samples={len(result.times)}"
+        f"t_max={config.t_max:g} норм. времени, "
+        f"dt={config.dt:g} норм. времени, samples={len(result.times)}"
     )
 
 
 def plot_system_layout(
     points: LagrangePointMap, system: SystemParameters, output_path: Path
 ) -> None:
-    """Save an overview of the Sun-Earth system and all Lagrange points."""
+    """Save an overview of one CR3BP system and all Lagrange points."""
 
     fig, (ax_full, ax_zoom) = plt.subplots(1, 2, figsize=(24, 11), facecolor="#05070d")
     fig.suptitle(
-        "Система Солнце - Земля и расположение точек Лагранжа", color="#f6f8ff", fontsize=18, y=0.98
+        f"Система {system.primary_name} - {system.secondary_name} и точки Лагранжа",
+        color="#f6f8ff",
+        fontsize=18,
+        y=0.98,
     )
 
     for ax in (ax_full, ax_zoom):
@@ -70,12 +74,24 @@ def plot_system_layout(
             zorder=6,
         )
 
-    ax_full.text(-system.mu - 0.09, 0.04, "Солнце", fontsize=12, weight="bold", color=sun_color)
     ax_full.text(
-        1.0 - system.mu + 0.03, 0.06, "Земля", fontsize=12, weight="bold", color=earth_color
+        -system.mu - 0.09, 0.04, system.primary_name, fontsize=12, weight="bold", color=sun_color
+    )
+    ax_full.text(
+        1.0 - system.mu + 0.03,
+        0.06,
+        system.secondary_name,
+        fontsize=12,
+        weight="bold",
+        color=earth_color,
     )
     ax_zoom.text(
-        1.0 - system.mu + 0.01, 0.006, "Земля", fontsize=11, weight="bold", color=earth_color
+        1.0 - system.mu + 0.01,
+        0.006,
+        system.secondary_name,
+        fontsize=11,
+        weight="bold",
+        color=earth_color,
     )
 
     for name, coords in points.items():
@@ -133,7 +149,7 @@ def plot_system_layout(
             markerfacecolor=sun_color,
             markeredgecolor="#111111",
             markersize=15,
-            label="Солнце",
+            label=system.primary_name,
         ),
         Line2D(
             [0],
@@ -143,7 +159,7 @@ def plot_system_layout(
             markerfacecolor=earth_color,
             markeredgecolor="#111111",
             markersize=11,
-            label="Земля",
+            label=system.secondary_name,
         ),
         Line2D(
             [0],
@@ -182,7 +198,7 @@ def plot_system_layout(
         text.set_color("#e6f0ff")
     legend.get_title().set_color("#f6f8ff")
 
-    fig.tight_layout(rect=(0.0, 0.0, 0.86, 0.95), pad=1.5)
+    fig.subplots_adjust(left=0.05, right=0.84, top=0.9, bottom=0.08, wspace=0.24)
     fig.savefig(output_path)
     fig.savefig(output_path.with_suffix(".svg"))
     plt.close(fig)
@@ -227,8 +243,8 @@ def plot_trajectory(result: SimulationResult, output_path: Path) -> None:
     ax_global.scatter(
         1.0 - system.mu, 0.0, s=90, color="#2f8fdd", edgecolor="black", linewidth=0.8, zorder=3
     )
-    ax_global.text(-system.mu - 0.09, 0.03, "Солнце", fontsize=10, weight="bold")
-    ax_global.text(1.0 - system.mu + 0.02, 0.03, "Земля", fontsize=10, weight="bold")
+    ax_global.text(-system.mu - 0.09, 0.03, system.primary_name, fontsize=10, weight="bold")
+    ax_global.text(1.0 - system.mu + 0.02, 0.03, system.secondary_name, fontsize=10, weight="bold")
 
     for name, coords in points.items():
         color = "#ff5b5b" if name == config.point_name else "#202020"
@@ -263,6 +279,8 @@ def plot_trajectory(result: SimulationResult, output_path: Path) -> None:
     ax_inset = inset_axes(ax_global, width="38%", height="38%", loc="lower right", borderpad=1.0)
     apply_dark_2d_style(ax_inset)
     ax_inset.set_title(f"Zoom около {config.point_name}", fontsize=9)
+    ax_inset.set_xlabel("x, норм. ед.", fontsize=7)
+    ax_inset.set_ylabel("y, норм. ед.", fontsize=7)
     ax_inset.set_aspect("equal", adjustable="box")
     ax_inset.axhline(target[1], color="#8893a8", linewidth=0.8)
     ax_inset.axvline(target[0], color="#8893a8", linewidth=0.8)
@@ -288,8 +306,8 @@ def plot_trajectory(result: SimulationResult, output_path: Path) -> None:
     )
 
     ax_local.set_title(f"Локальный вид относительно {config.point_name}")
-    ax_local.set_xlabel(r"$\Delta x = x - x_{L}$")
-    ax_local.set_ylabel(r"$\Delta y = y - y_{L}$")
+    ax_local.set_xlabel(r"$\Delta x = x - x_{L}$, норм. ед.")
+    ax_local.set_ylabel(r"$\Delta y = y - y_{L}$, норм. ед.")
     ax_local.set_aspect("equal", adjustable="box")
     ax_local.axhline(0.0, color="#c8c8c8", linewidth=1.0)
     ax_local.axvline(0.0, color="#c8c8c8", linewidth=1.0)
@@ -308,8 +326,8 @@ def plot_trajectory(result: SimulationResult, output_path: Path) -> None:
 
     distance_color = "#ff4d6d" if config.point_name in {"L1", "L2", "L3"} else "#7cff7a"
     ax_distance.set_title(f"Расстояние до {config.point_name} во времени")
-    ax_distance.set_xlabel("t, безразмерное время")
-    ax_distance.set_ylabel(r"$r(t) = \sqrt{(\Delta x)^2 + (\Delta y)^2}$")
+    ax_distance.set_xlabel("t, нормированное безразмерное время")
+    ax_distance.set_ylabel(r"$r(t) = \sqrt{(\Delta x)^2 + (\Delta y)^2}$, норм. ед.")
     ax_distance.plot(result.times, rel_distance, color=distance_color, linewidth=2.6)
     ax_distance.set_xlim(0.0, float(result.times[-1]))
     ax_distance.set_ylim(0.0, rel_distance.max() * 1.18 if rel_distance.max() > 0 else 1.0)
@@ -322,7 +340,7 @@ def plot_trajectory(result: SimulationResult, output_path: Path) -> None:
     fig.suptitle(
         (
             f"Траектория около {config.point_name}: {behavior}; "
-            f"максимальное удаление = {rel_distance.max():.4f}"
+            f"максимальное удаление = {rel_distance.max():.4f} норм. ед."
         ),
         color="#f6f8ff",
         fontsize=18,
@@ -405,15 +423,16 @@ def plot_trajectory_3d(result: SimulationResult, output_path: Path) -> None:
     ax.set_title(
         (
             f"3D-вид траектории около {result.point_name}\n"
-            f"{behavior}; max r = {rel_distance.max():.4f}\n"
-            f"t_max={result.config.t_max:g}, dt={result.config.dt:g}, "
+            f"{behavior}; max r = {rel_distance.max():.4f} норм. ед.\n"
+            f"t_max={result.config.t_max:g} норм. времени, "
+            f"dt={result.config.dt:g} норм. времени, "
             f"vx={result.config.vx:g}, vy={result.config.vy:g}, vz={result.config.vz:g}"
         ),
         pad=16,
     )
-    ax.set_xlabel("x")
-    ax.set_ylabel("y")
-    ax.set_zlabel("z")
+    ax.set_xlabel("x, норм. ед.")
+    ax.set_ylabel("y, норм. ед.")
+    ax.set_zlabel("z, норм. ед.")
 
     radius = (
         max(

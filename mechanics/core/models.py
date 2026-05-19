@@ -13,8 +13,17 @@ class SystemParameters:
     """Normalized parameters of one CR3BP system."""
 
     name: str
+    primary_name: str
+    secondary_name: str
     mu: float
     distance_m: float
+    time_unit_s: float
+
+    @property
+    def slug(self) -> str:
+        """Filesystem-safe system name."""
+
+        return self.name.replace("-", "_")
 
 
 @dataclass(frozen=True, slots=True)
@@ -31,6 +40,7 @@ class SimulationConfig:
     t_max: float = 10.0
     dt: float = 0.002
     sample_stride: int = 4
+    escape_threshold: float = 0.01
 
     @property
     def mode_name(self) -> str:
@@ -42,7 +52,7 @@ class SimulationConfig:
     def default_output_stem(self) -> str:
         """Default output name for one run."""
 
-        return f"sun_earth_{self.point_name.lower()}_{self.mode_name}"
+        return f"{self.point_name.lower()}_{self.mode_name}"
 
 
 @dataclass(frozen=True, slots=True)

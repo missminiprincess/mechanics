@@ -4,6 +4,8 @@ import csv
 import json
 from pathlib import Path
 
+from mechanics.core.analysis import distance_to_km, time_to_days
+from mechanics.core.dynamics import jacobi_constant
 from mechanics.core.models import LagrangePointMap, OutputPaths, SimulationResult
 
 
@@ -45,9 +47,13 @@ def save_trajectory_csv(result: SimulationResult, path: Path) -> None:
 
     header = [
         "t",
+        "t_days",
         "x",
         "y",
         "z",
+        "x_km",
+        "y_km",
+        "z_km",
         "vx",
         "vy",
         "vz",
@@ -55,19 +61,32 @@ def save_trajectory_csv(result: SimulationResult, path: Path) -> None:
         "dy",
         "dz",
         "r_xy",
+        "r_xy_km",
+        "jacobi",
+        "jacobi_delta",
     ]
+    jacobi_values = jacobi_constant(result.states, result.system.mu)
     with path.open("w", newline="", encoding="utf-8") as stream:
         writer = csv.writer(stream)
         writer.writerow(header)
-        for time, state, rel, distance in zip(
-            result.times, result.states, result.rel_states, result.rel_distance_xy, strict=True
+        for time, state, rel, distance, jacobi in zip(
+            result.times,
+            result.states,
+            result.rel_states,
+            result.rel_distance_xy,
+            jacobi_values,
+            strict=True,
         ):
             writer.writerow(
                 [
                     time,
+                    time_to_days(result, float(time)),
                     state[0],
                     state[1],
                     state[2],
+                    distance_to_km(result, float(state[0])),
+                    distance_to_km(result, float(state[1])),
+                    distance_to_km(result, float(state[2])),
                     state[3],
                     state[4],
                     state[5],
@@ -75,5 +94,8 @@ def save_trajectory_csv(result: SimulationResult, path: Path) -> None:
                     rel[1],
                     rel[2],
                     distance,
+                    distance_to_km(result, float(distance)),
+                    jacobi,
+                    jacobi - jacobi_values[0],
                 ]
             )
