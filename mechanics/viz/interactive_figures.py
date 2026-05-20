@@ -116,14 +116,31 @@ def build_local_2d(result: SimulationResult, sample: np.ndarray) -> go.Figure:
         )
         for i in range(len(sample))
     ]
+    slider_steps = [
+        {
+            "method": "animate",
+            "label": f"{times[i]:.2f}",
+            "args": [
+                [str(i)],
+                {
+                    "mode": "immediate",
+                    "frame": {"duration": 0, "redraw": False},
+                    "transition": {"duration": 0},
+                },
+            ],
+        }
+        for i in range(len(sample))
+    ]
+    layout = base_layout(f"Локальная траектория около {result.point_name}")
+    layout["margin"] = {"l": 54, "r": 24, "t": 52, "b": 96}
     fig.update_layout(
-        **base_layout(f"Локальная траектория около {result.point_name}"),
+        **layout,
         updatemenus=[
             {
                 "type": "buttons",
                 "direction": "left",
                 "x": 0.0,
-                "y": -0.12,
+                "y": -0.2,
                 "buttons": [
                     {
                         "label": "Play",
@@ -143,6 +160,17 @@ def build_local_2d(result: SimulationResult, sample: np.ndarray) -> go.Figure:
                         "args": [[None], {"frame": {"duration": 0}, "mode": "immediate"}],
                     },
                 ],
+            }
+        ],
+        sliders=[
+            {
+                "active": 0,
+                "x": 0.18,
+                "y": -0.16,
+                "len": 0.78,
+                "currentvalue": {"prefix": "t = ", "suffix": f" {TIME_UNIT}"},
+                "pad": {"t": 0, "b": 0},
+                "steps": slider_steps,
             }
         ],
     )
