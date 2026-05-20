@@ -20,6 +20,7 @@ __pycache__/
 # Generated outputs
 docs/pdf/*.pdf
 !docs/pdf/main.pdf
+!docs/pdf/commands.pdf
 docs/sources/books/*.pdf
 results/archive/
 results/figures/
